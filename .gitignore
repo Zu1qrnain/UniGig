@@ -1,0 +1,5 @@
+unigig-backend/node_modules
+unigig-frontend/node_modules
+unigig-backend/.env
+unigig-frontend/.env
+.DS_Store
