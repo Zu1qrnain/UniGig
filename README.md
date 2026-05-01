@@ -15,7 +15,7 @@ A university-scoped freelancing platform connecting students with skills to stud
 ## Setup Instructions
 
 ### 1. Clone the repo
-git clone https://github.com/yourusername/UniGig.git
+
 cd UniGig
 
 ### 2. Setup Database

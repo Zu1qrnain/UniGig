@@ -26,6 +26,8 @@ const io = new Server(httpServer, {
   }
 })
 
+
+
 // Middleware
 app.use(morgan('dev'))
 app.use(cors({
@@ -46,7 +48,7 @@ app.use('/api/v1/messages', chatRoutes)
 
 // Health check
 app.get('/', (req, res) => {
-  res.json({ message: '✅ UniGig API is running' })
+  res.json({ message: 'UniGig API is running' })
 })
 
 // Socket.io

@@ -50,16 +50,19 @@ const AppRouter = () => {
             <ClientDashboard />
           </ProtectedRoute>
         } />
+
         <Route path='/client/orders' element={
           <ProtectedRoute allowedRoles={[ROLES.CLIENT]}>
             <MyOrders />
           </ProtectedRoute>
         } />
+
         <Route path='/client/chat/:orderId' element={
           <ProtectedRoute allowedRoles={[ROLES.CLIENT]}>
             <ChatPage />
           </ProtectedRoute>
         } />
+        
         <Route path='/client/review/:orderId' element={
           <ProtectedRoute allowedRoles={[ROLES.CLIENT]}>
             <LeaveReview />
@@ -72,16 +75,21 @@ const AppRouter = () => {
             <FreelancerDashboard />
           </ProtectedRoute>
         } />
+
+
         <Route path='/freelancer/gigs' element={
           <ProtectedRoute allowedRoles={[ROLES.FREELANCER]}>
             <MyGigs />
           </ProtectedRoute>
         } />
+
+
         <Route path='/freelancer/gigs/create' element={
           <ProtectedRoute allowedRoles={[ROLES.FREELANCER]}>
             <CreateEditGig />
           </ProtectedRoute>
         } />
+
         <Route path='/freelancer/gigs/edit/:id' element={
           <ProtectedRoute allowedRoles={[ROLES.FREELANCER]}>
             <CreateEditGig />
@@ -94,21 +102,28 @@ const AppRouter = () => {
             <AdminDashboard />
           </ProtectedRoute>
         } />
+
+
         <Route path='/admin/users' element={
           <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
             <ManageUsers />
           </ProtectedRoute>
         } />
+
+
         <Route path='/admin/gigs' element={
           <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
             <ManageGigs />
           </ProtectedRoute>
         } />
+
+
         <Route path='/admin/orders' element={
           <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
             <ManageOrders />
           </ProtectedRoute>
         } />
+
       </Routes>
     </BrowserRouter>
   )
