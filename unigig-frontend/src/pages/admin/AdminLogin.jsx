@@ -3,9 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
 import ErrorMessage from '../../components/common/ErrorMessage'
 import { ROLES } from '../../constants/roles'
-import { getDashboardPath } from '../../utils/role.utils'
 
-const LoginPage = () => {
+const AdminLogin = () => {
   const { login, logout, loading } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '' })
@@ -24,12 +23,12 @@ const LoginPage = () => {
       setError(res.message)
       return
     }
-    if (res.data?.user?.role === ROLES.ADMIN) {
+    if (res.data?.user?.role !== ROLES.ADMIN) {
       logout(() => {})
-      setError('Admins must use the Admin Login portal.')
+      setError('Access denied. This portal is for admins only.')
       return
     }
-    navigate(getDashboardPath(res.data.user.role))
+    navigate('/admin/dashboard')
   }
 
   return (
@@ -38,7 +37,7 @@ const LoginPage = () => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, #eff6ff 0%, #ffffff 100%)',
+      background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)',
       padding: '24px'
     }}>
       <div style={{ width: '100%', maxWidth: '420px' }}>
@@ -49,33 +48,48 @@ const LoginPage = () => {
             fontFamily: 'Bricolage Grotesque, sans-serif',
             fontSize: '28px',
             fontWeight: '800',
-            color: 'var(--primary)'
+            color: '#fff'
           }}>
-            Uni<span style={{ color: 'var(--secondary)' }}>Gig</span>
+            Uni<span style={{ color: '#a5b4fc' }}>Gig</span>
           </Link>
           <p style={{
             marginTop: '8px',
-            color: 'var(--text-secondary)',
+            color: '#c7d2fe',
             fontSize: '15px'
           }}>
-            Welcome back! Login to continue
+            Admin Portal — Restricted Access
           </p>
         </div>
 
         {/* Card */}
         <div className='card' style={{ padding: '32px' }}>
+          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+            <span style={{
+              display: 'inline-block',
+              background: '#ede9fe',
+              color: '#4f46e5',
+              borderRadius: '8px',
+              padding: '6px 14px',
+              fontSize: '13px',
+              fontWeight: '700',
+              letterSpacing: '0.05em'
+            }}>
+              ADMIN LOGIN
+            </span>
+          </div>
+
           <form onSubmit={handleSubmit}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
               <ErrorMessage message={error} />
 
               <div className='form-group'>
-                <label>Email Address</label>
+                <label>Admin Email</label>
                 <input
                   type='email'
                   name='email'
                   className='input'
-                  placeholder='you@university.edu'
+                  placeholder='admin@unigig.com'
                   value={form.email}
                   onChange={handleChange}
                   required
@@ -101,34 +115,21 @@ const LoginPage = () => {
                 style={{ width: '100%', padding: '12px', fontSize: '15px' }}
                 disabled={loading}
               >
-                {loading ? 'Logging in...' : 'Login →'}
+                {loading ? 'Verifying...' : 'Admin Login →'}
               </button>
             </div>
           </form>
         </div>
 
-        {/* Register Link */}
         <p style={{
           textAlign: 'center',
           marginTop: '20px',
-          fontSize: '14px',
-          color: 'var(--text-secondary)'
-        }}>
-          Don't have an account?{' '}
-          <Link to='/register' style={{ color: 'var(--primary)', fontWeight: '600' }}>
-            Register here
-          </Link>
-        </p>
-
-        <p style={{
-          textAlign: 'center',
-          marginTop: '10px',
           fontSize: '13px',
-          color: 'var(--text-muted)'
+          color: '#c7d2fe'
         }}>
-          Admin?{' '}
-          <Link to='/admin/login' style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>
-            Admin Login
+          Not an admin?{' '}
+          <Link to='/login' style={{ color: '#fff', fontWeight: '600' }}>
+            Go to regular login
           </Link>
         </p>
       </div>
@@ -136,4 +137,4 @@ const LoginPage = () => {
   )
 }
 
-export default LoginPage
+export default AdminLogin

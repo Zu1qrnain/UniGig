@@ -21,6 +21,7 @@ import MyGigs from '../pages/freelancer/MyGigs'
 import CreateEditGig from '../pages/freelancer/CreateEditGig'
 
 // Admin pages
+import AdminLogin from '../pages/admin/AdminLogin'
 import AdminDashboard from '../pages/admin/AdminDashboard'
 import ManageUsers from '../pages/admin/ManageUsers'
 import ManageGigs from '../pages/admin/ManageGigs'
@@ -97,6 +98,8 @@ const AppRouter = () => {
         } />
 
         {/* Admin Routes */}
+        <Route path='/admin/login' element={<AdminLogin />} />
+
         <Route path='/admin/dashboard' element={
           <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
             <AdminDashboard />

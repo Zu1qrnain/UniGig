@@ -5,9 +5,9 @@ const { sendSuccess, sendError } = require('../utils/response.utils')
 
 const register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body
+    const { name, email, password } = req.body
 
-    if (!name || !email || !password || !role) {
+    if (!name || !email || !password) {
       return sendError(res, 'All fields are required', 400)
     }
 
@@ -22,7 +22,7 @@ const register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role
+      role: 'client'
     })
 
     return sendSuccess(res, 'Registration successful', {
