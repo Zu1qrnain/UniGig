@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import Navbar from '../../components/common/Navbar'
-import Footer from '../../components/common/Footer'
+import AdminLayout from '../../components/admin/AdminLayout'
 import Loader from '../../components/common/Loader'
 import ErrorMessage from '../../components/common/ErrorMessage'
 import { getAllUsersAPI, banUserAPI, deleteUserAPI } from '../../api/admin.api'
@@ -59,18 +58,7 @@ const ManageUsers = () => {
   })
 
   return (
-    <div>
-      <Navbar />
-
-      <div className='container' style={{ padding: '48px 24px' }}>
-
-        {/* Header */}
-        <div style={{ marginBottom: '32px' }}>
-          <h1 style={{ fontSize: '28px', marginBottom: '4px' }}>Manage Users</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>
-            {users.length} total users on the platform
-          </p>
-        </div>
+    <AdminLayout title='Manage Users' subtitle={`${users.length} total users on the platform`}>
 
         {/* Filters */}
         <div style={{
@@ -232,10 +220,7 @@ const ManageUsers = () => {
             </div>
           </div>
         )}
-      </div>
-
-      <Footer />
-    </div>
+    </AdminLayout>
   )
 }
 

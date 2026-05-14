@@ -2,67 +2,61 @@ const Message = require('../models/Message')
 const jwt = require('jsonwebtoken')
 
 const initSocket = (io) => {
-    io.use((socket, next) => {
-      const token = socket.handshake.auth?.token
-      if (!token) {
-        return next(new Error('Authentication error: token missing'))
+  io.use((socket, next) => {
+    const token = socket.handshake.auth?.token
+    if (!token) return next(new Error('Authentication error: token missing'))
+    try {
+      socket.user = jwt.verify(token, process.env.JWT_SECRET)
+      next()
+    } catch {
+      next(new Error('Authentication error: invalid token'))
+    }
+  })
+
+  io.on('connection', (socket) => {
+    console.log(`✅ Socket connected: ${socket.id} (userId: ${socket.user?.id})`)
+
+    socket.on('join_room', (orderId) => {
+      const room = `order_${orderId}`
+      socket.join(room)
+      console.log(`User ${socket.user?.id} joined ${room}`)
+    })
+
+    socket.on('send_message', async (data) => {
+      if (!data?.orderId || !data?.content?.trim()) {
+        socket.emit('message_error', { error: 'Missing orderId or content' })
+        return
       }
+
       try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
-        socket.user = decoded
-        next()
+        const message = await Message.create({
+          content: data.content.trim(),
+          sender_id: socket.user.id,
+          order_id: data.orderId
+        })
+
+        const payload = {
+          senderId: socket.user.id,
+          content: message.content,
+          createdAt: message.createdAt
+        }
+
+        socket.to(`order_${data.orderId}`).emit('receive_message', payload)
+        socket.emit('message_sent', payload)
       } catch (err) {
-        next(new Error('Authentication error: invalid token'))
+        console.error('send_message error:', err)
+        socket.emit('message_error', { error: 'Failed to save message' })
       }
     })
 
-    io.on('connection', (socket) => {
-      console.log(`✅ User connected: ${socket.id} (userId: ${socket.user?.id})`)
-
-      // Join a room per order
-      socket.on('join_room', (orderId) => {
-        socket.join(`order_${orderId}`)
-        console.log(`User joined room: order_${orderId}`)
-      })
-
-      // Send and receive messages
-      socket.on('send_message', async (data) => {
-        // data = { orderId, content } — senderId taken from verified JWT, not client
-        if (!data?.orderId || !data?.content?.trim()) {
-          socket.emit('message_error', { error: 'Missing orderId or content' })
-          return
-        }
-
-        const senderId = socket.user.id
-
-        try {
-          const message = await Message.create({
-            content: data.content,
-            sender_id: senderId,
-            order_id: data.orderId
-          })
-
-          const payload = {
-            senderId,
-            content: data.content,
-            createdAt: message.createdAt
-          }
-
-          // Broadcast to others in the room (excludes sender to prevent duplicates)
-          socket.to(`order_${data.orderId}`).emit('receive_message', payload)
-          // Confirm back to sender with server timestamp
-          socket.emit('message_sent', payload)
-        } catch (err) {
-          console.error('send_message error:', err)
-          socket.emit('message_error', { error: 'Failed to save message' })
-        }
-      })
-  
-      // Disconnect
-      socket.on('disconnect', () => {
-        console.log(`❌ User disconnected: ${socket.id}`)
-      })
+    socket.on('error', (err) => {
+      console.error(`Socket error (${socket.id}):`, err.message)
     })
-  }
-  
-  module.exports = { initSocket }
+
+    socket.on('disconnect', (reason) => {
+      console.log(`❌ Socket disconnected: ${socket.id} — ${reason}`)
+    })
+  })
+}
+
+module.exports = { initSocket }

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import Navbar from '../../components/common/Navbar'
-import Footer from '../../components/common/Footer'
+import AdminLayout from '../../components/admin/AdminLayout'
 import Loader from '../../components/common/Loader'
 import ErrorMessage from '../../components/common/ErrorMessage'
 import { getAdminGigsAPI, deleteAdminGigAPI } from '../../api/admin.api'
@@ -46,18 +45,7 @@ const ManageGigs = () => {
   })
 
   return (
-    <div>
-      <Navbar />
-
-      <div className='container' style={{ padding: '48px 24px' }}>
-
-        {/* Header */}
-        <div style={{ marginBottom: '32px' }}>
-          <h1 style={{ fontSize: '28px', marginBottom: '4px' }}>Manage Gigs</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>
-            {gigs.length} total gigs on the platform
-          </p>
-        </div>
+    <AdminLayout title='Manage Gigs' subtitle={`${gigs.length} total gigs on the platform`}>
 
         {/* Filters */}
         <div style={{
@@ -202,10 +190,7 @@ const ManageGigs = () => {
             )}
           </div>
         )}
-      </div>
-
-      <Footer />
-    </div>
+    </AdminLayout>
   )
 }
 

@@ -5,10 +5,14 @@ const { sendSuccess, sendError } = require('../utils/response.utils')
 
 const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body
+    const { name, email, password, role } = req.body
 
     if (!name || !email || !password) {
       return sendError(res, 'All fields are required', 400)
+    }
+
+    if (!['client', 'freelancer'].includes(role)) {
+      return sendError(res, 'Invalid role. Must be client or freelancer.', 400)
     }
 
     const existingUser = await User.findOne({ where: { email } })
@@ -22,7 +26,7 @@ const register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: 'client'
+      role
     })
 
     return sendSuccess(res, 'Registration successful', {

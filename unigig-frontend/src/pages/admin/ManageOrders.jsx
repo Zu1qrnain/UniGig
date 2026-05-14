@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-import Navbar from '../../components/common/Navbar'
-import Footer from '../../components/common/Footer'
+import AdminLayout from '../../components/admin/AdminLayout'
 import Loader from '../../components/common/Loader'
 import ErrorMessage from '../../components/common/ErrorMessage'
 import OrderStatusBadge from '../../components/orders/OrderStatusBadge'
@@ -41,18 +40,7 @@ const ManageOrders = () => {
   })
 
   return (
-    <div>
-      <Navbar />
-
-      <div className='container' style={{ padding: '48px 24px' }}>
-
-        {/* Header */}
-        <div style={{ marginBottom: '32px' }}>
-          <h1 style={{ fontSize: '28px', marginBottom: '4px' }}>Manage Orders</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '15px' }}>
-            {orders.length} total orders on the platform
-          </p>
-        </div>
+    <AdminLayout title='Manage Orders' subtitle={`${orders.length} total orders on the platform`}>
 
         {/* Filters */}
         <div style={{
@@ -185,10 +173,7 @@ const ManageOrders = () => {
             </div>
           </div>
         )}
-      </div>
-
-      <Footer />
-    </div>
+    </AdminLayout>
   )
 }
 

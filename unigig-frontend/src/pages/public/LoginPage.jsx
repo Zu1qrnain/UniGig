@@ -3,10 +3,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import useAuth from '../../hooks/useAuth'
 import ErrorMessage from '../../components/common/ErrorMessage'
 import { ROLES } from '../../constants/roles'
-import { getDashboardPath } from '../../utils/role.utils'
 
 const LoginPage = () => {
-  const { login, logout, loading } = useAuth()
+  const { login, loading } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
@@ -18,18 +17,8 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    // Pass a no-op navigate so we can gate on role before redirecting
-    const res = await login(form, () => {})
-    if (!res.success) {
-      setError(res.message)
-      return
-    }
-    if (res.data?.user?.role === ROLES.ADMIN) {
-      logout(() => {})
-      setError('Admins must use the Admin Login portal.')
-      return
-    }
-    navigate(getDashboardPath(res.data.user.role))
+    const res = await login(form, navigate, [ROLES.CLIENT, ROLES.FREELANCER])
+    if (!res.success) setError(res.message)
   }
 
   return (

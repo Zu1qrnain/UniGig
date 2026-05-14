@@ -5,7 +5,7 @@ import ErrorMessage from '../../components/common/ErrorMessage'
 import { ROLES } from '../../constants/roles'
 
 const AdminLogin = () => {
-  const { login, logout, loading } = useAuth()
+  const { login, loading } = useAuth()
   const navigate = useNavigate()
   const [form, setForm] = useState({ email: '', password: '' })
   const [error, setError] = useState('')
@@ -17,18 +17,8 @@ const AdminLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    // Pass a no-op navigate so we can gate on role before redirecting
-    const res = await login(form, () => {})
-    if (!res.success) {
-      setError(res.message)
-      return
-    }
-    if (res.data?.user?.role !== ROLES.ADMIN) {
-      logout(() => {})
-      setError('Access denied. This portal is for admins only.')
-      return
-    }
-    navigate('/admin/dashboard')
+    const res = await login(form, navigate, [ROLES.ADMIN])
+    if (!res.success) setError(res.message)
   }
 
   return (

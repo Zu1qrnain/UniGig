@@ -12,6 +12,8 @@ const GigListingPage = () => {
   const [gigs, setGigs] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [totalPages, setTotalPages] = useState(1)
+  const [currentPage, setCurrentPage] = useState(1)
   const [filters, setFilters] = useState({
     search: '',
     category: '',
@@ -20,13 +22,18 @@ const GigListingPage = () => {
     sort: ''
   })
 
-  const fetchGigs = async (params) => {
+  const fetchGigs = async (params, page = 1) => {
     setLoading(true)
     setError('')
     try {
-      const res = await getAllGigsAPI(params)
-      if (res.success) setGigs(res.data)
-      else setError(res.message)
+      const res = await getAllGigsAPI({ ...params, page, limit: 12 })
+      if (res.success) {
+        setGigs(res.data.gigs)
+        setTotalPages(res.data.totalPages)
+        setCurrentPage(res.data.currentPage)
+      } else {
+        setError(res.message)
+      }
     } catch (err) {
       setError('Failed to fetch gigs')
     } finally {
@@ -35,7 +42,7 @@ const GigListingPage = () => {
   }
 
   useEffect(() => {
-    fetchGigs(filters)
+    fetchGigs(filters, 1)
   }, [filters])
 
   const handleSearch = (query) => {
@@ -81,11 +88,7 @@ const GigListingPage = () => {
 
           {/* Results Count */}
           {!loading && (
-            <p style={{
-              fontSize: '14px',
-              color: 'var(--text-muted)',
-              marginBottom: '20px'
-            }}>
+            <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '20px' }}>
               {gigs.length} gig{gigs.length !== 1 ? 's' : ''} found
             </p>
           )}
@@ -106,6 +109,29 @@ const GigListingPage = () => {
               {gigs.map(gig => (
                 <GigCard key={gig.id} gig={gig} />
               ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          {!loading && !error && totalPages > 1 && (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '40px' }}>
+              <button
+                className='btn btn-primary'
+                onClick={() => fetchGigs(filters, currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                ← Prev
+              </button>
+              <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                className='btn btn-primary'
+                onClick={() => fetchGigs(filters, currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Next →
+              </button>
             </div>
           )}
 

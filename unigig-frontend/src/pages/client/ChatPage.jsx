@@ -38,13 +38,20 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (!socket) return
-    socket.emit('join_room', orderId)
+    socket.emit('join_room', `order_${orderId}`)
 
     socket.on('receive_message', (msg) => {
       setMessages(prev => [...prev, msg])
     })
 
-    return () => socket.off('receive_message')
+    socket.on('message_sent', (msg) => {
+      setMessages(prev => [...prev, msg])
+    })
+
+    return () => {
+      socket.off('receive_message')
+      socket.off('message_sent')
+    }
   }, [socket, orderId])
 
   useEffect(() => {
@@ -59,13 +66,6 @@ const ChatPage = () => {
       senderId: user.id,
       content: input.trim()
     })
-
-    setMessages(prev => [...prev, {
-      senderId: user.id,
-      sender_id: user.id,
-      content: input.trim(),
-      createdAt: new Date()
-    }])
 
     setInput('')
   }

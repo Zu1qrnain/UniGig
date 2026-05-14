@@ -20,7 +20,7 @@ const createGig = async (req, res) => {
 
 const getAllGigs = async (req, res) => {
   try {
-    const { search, category, min_price, max_price, sort } = req.query
+    const { search, category, min_price, max_price, sort, page = 1, limit = 12 } = req.query
     const where = { is_active: true }
 
     if (search) where[Op.or] = [
@@ -38,9 +38,15 @@ const getAllGigs = async (req, res) => {
                 : sort === 'price_desc' ? [['price', 'DESC']]
                 : [['createdAt', 'DESC']]
 
-    const gigs = await Gig.findAll({
+    const pageNum = Math.max(1, parseInt(page))
+    const limitNum = Math.min(50, Math.max(1, parseInt(limit)))
+    const offset = (pageNum - 1) * limitNum
+
+    const { count, rows: gigs } = await Gig.findAndCountAll({
       where,
       order,
+      limit: limitNum,
+      offset,
       include: [{
         model: User,
         as: 'freelancer',
@@ -48,7 +54,12 @@ const getAllGigs = async (req, res) => {
       }]
     })
 
-    return sendSuccess(res, 'Gigs fetched successfully', gigs)
+    return sendSuccess(res, 'Gigs fetched successfully', {
+      gigs,
+      totalCount: count,
+      totalPages: Math.ceil(count / limitNum),
+      currentPage: pageNum
+    })
   } catch (error) {
     return sendError(res, error.message)
   }
