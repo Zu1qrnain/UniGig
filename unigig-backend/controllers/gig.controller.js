@@ -23,12 +23,15 @@ const getAllGigs = async (req, res) => {
     const { search, category, min_price, max_price, sort } = req.query
     const where = { is_active: true }
 
-    if (search) where.title = { [Op.like]: `%${search}%` }
+    if (search) where[Op.or] = [
+      { title: { [Op.like]: `%${search}%` } },
+      { description: { [Op.like]: `%${search}%` } }
+    ]
     if (category) where.category = category
     if (min_price || max_price) {
       where.price = {}
-      if (min_price) where.price[Op.gte] = min_price
-      if (max_price) where.price[Op.lte] = max_price
+      if (min_price) where.price[Op.gte] = parseFloat(min_price)
+      if (max_price) where.price[Op.lte] = parseFloat(max_price)
     }
 
     const order = sort === 'price_asc'  ? [['price', 'ASC']]
