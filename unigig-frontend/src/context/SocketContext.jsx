@@ -6,6 +6,7 @@ export const SocketContext = createContext(null)
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null)
+  const [connected, setConnected] = useState(false)
   const [token, setToken] = useState(getToken)
 
   // Sync token when it changes in storage (login/logout in same or other tab)
@@ -22,6 +23,7 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     if (!token) {
       setSocket(null)
+      setConnected(false)
       return
     }
 
@@ -31,9 +33,11 @@ export const SocketProvider = ({ children }) => {
 
     newSocket.on('connect', () => {
       console.log('✅ Socket connected:', newSocket.id)
+      setConnected(true)
     })
 
     newSocket.on('connect_error', (err) => {
+      setConnected(false)
       if (err.message.includes('Authentication error')) {
         console.warn('Socket auth failed — stale token cleared')
         setToken(null)
@@ -42,17 +46,19 @@ export const SocketProvider = ({ children }) => {
 
     newSocket.on('disconnect', () => {
       console.log('❌ Socket disconnected')
+      setConnected(false)
     })
 
     setSocket(newSocket)
 
     return () => {
       newSocket.disconnect()
+      setConnected(false)
     }
   }, [token])
 
   return (
-    <SocketContext.Provider value={{ socket, setToken }}>
+    <SocketContext.Provider value={{ socket, connected, setToken }}>
       {children}
     </SocketContext.Provider>
   )

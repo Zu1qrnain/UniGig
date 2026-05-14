@@ -1,6 +1,33 @@
+# Dependencies
 unigig-backend/node_modules
 unigig-frontend/node_modules
+
+# Environment variables
 unigig-backend/.env
 unigig-frontend/.env
+.env
+.env.local
+.env.*.local
+
+# Build output
+unigig-frontend/dist
+unigig-frontend/dist-ssr
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.suo
+*.sw?
+
+# Claude Code
 .claude

@@ -11,7 +11,7 @@ import useSocket from '../../hooks/useSocket'
 const ChatPage = () => {
   const { orderId } = useParams()
   const { user } = useAuth()
-  const { socket } = useSocket()
+  const { socket, connected } = useSocket()
   const [messages, setMessages] = useState([])
   const [order, setOrder] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -59,7 +59,7 @@ const ChatPage = () => {
   }, [messages])
 
   const handleSend = () => {
-    if (!input.trim() || !socket) return
+    if (!input.trim() || !socket || !connected) return
 
     socket.emit('send_message', {
       orderId,
@@ -128,6 +128,20 @@ const ChatPage = () => {
         <div ref={bottomRef} />
       </div>
 
+      {/* Socket error banner */}
+      {!connected && (
+        <div style={{
+          padding: '10px 24px',
+          background: '#fff3cd',
+          borderTop: '1px solid #ffc107',
+          color: '#856404',
+          fontSize: '13px',
+          textAlign: 'center'
+        }}>
+          {socket ? 'Connecting to chat server...' : 'Chat unavailable — not signed in or session expired. Please refresh.'}
+        </div>
+      )}
+
       {/* Input */}
       <div style={{
         padding: '16px 24px',
@@ -139,11 +153,12 @@ const ChatPage = () => {
       }}>
         <textarea
           className='input'
-          placeholder='Type a message... (Enter to send)'
+          placeholder={connected ? 'Type a message... (Enter to send)' : 'Chat unavailable'}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           rows={1}
+          disabled={!connected}
           style={{
             flex: 1,
             resize: 'none',
@@ -155,7 +170,7 @@ const ChatPage = () => {
           onClick={handleSend}
           className='btn btn-primary'
           style={{ padding: '10px 20px', whiteSpace: 'nowrap' }}
-          disabled={!input.trim()}
+          disabled={!input.trim() || !connected}
         >
           Send →
         </button>
