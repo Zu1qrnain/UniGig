@@ -38,7 +38,7 @@ const ChatPage = () => {
 
   useEffect(() => {
     if (!socket) return
-    socket.emit('join_room', `order_${orderId}`)
+    socket.emit('join_room', orderId)
 
     socket.on('receive_message', (msg) => {
       setMessages(prev => [...prev, msg])
