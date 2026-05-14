@@ -3,3 +3,4 @@ unigig-frontend/node_modules
 unigig-backend/.env
 unigig-frontend/.env
 .DS_Store
+.claude
