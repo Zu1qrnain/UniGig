@@ -18,8 +18,9 @@ const banUser = async (req, res) => {
     const user = await User.findByPk(req.params.id)
     if (!user) return sendError(res, 'User not found', 404)
 
-    await user.update({ is_banned: !user.is_banned })
-    const msg = user.is_banned ? 'User banned' : 'User unbanned'
+    const newStatus = !user.is_banned
+    await user.update({ is_banned: newStatus })
+    const msg = newStatus ? 'User banned' : 'User unbanned'
     return sendSuccess(res, msg, user)
   } catch (error) {
     return sendError(res, error.message)
