@@ -91,6 +91,26 @@ npm run dev
 
 Open `http://localhost:5173` in your browser.
 
+## Docker Deployment (Recommended)
+
+To run the entire application (MySQL, Backend, Frontend) in Docker, use the provided `docker-compose.yml`.
+
+1. Copy the example environment files:
+   ```bash
+   cp .env.example .env
+   cp unigig-backend/.env.example unigig-backend/.env
+   cp unigig-frontend/.env.example unigig-frontend/.env
+   ```
+
+2. Edit the `.env` files with your secrets (especially `MYSQL_ROOT_PASSWORD` and `JWT_SECRET`).
+
+3. Build and start the containers in detached mode:
+   ```bash
+   docker-compose up -d --build
+   ```
+
+The application will now be running at `http://localhost` (Port 80) and the backend API at `http://localhost:8000/api/v1`.
+
 ## Environment Variables
 
 ### Backend (`unigig-backend/.env`)
